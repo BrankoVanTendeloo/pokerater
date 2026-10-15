@@ -2,11 +2,12 @@ function CalculateExpectedScore(ratingA: number, ratingB: number) {
     return 1 / (1 + 10 ** ((ratingB - ratingA) / 400))
 }
 
-enum Result {
-    win,
-    lose,
-    tie,
+const Result = {
+    win: 1,
+    lose: 0,
+    tie: 0.5,
 }
+type Result = (typeof Result)[keyof typeof Result]
 
 function GetScoreFromResult(result: Result) {
     switch (result) {
@@ -14,7 +15,7 @@ function GetScoreFromResult(result: Result) {
             return 1
         case Result.lose:
             return 0
-        case Result.tie:
+        default:
             return 0.5
     }
 }
