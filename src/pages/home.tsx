@@ -19,6 +19,7 @@ const HomeCard: FC<HomeCardProps> = ({children, title, callToAction}) => {
 const Home: FC = () => {
     return (
         <>
+            <h1>PokéRater</h1>
             <HomeCard title="Rate Pokémon" callToAction="Start here">
                 Choose between two Pokémon which one you prefer.
             </HomeCard>
