@@ -11,4 +11,5 @@ const Home: FC = () => {
 
 export default Home
 
-//
+// Cards with links to other pages
+// Explaination of the website
