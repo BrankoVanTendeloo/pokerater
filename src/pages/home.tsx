@@ -1,10 +1,30 @@
-import type {FC} from 'react'
+import {Button} from '@mantine/core'
+import type {FC, PropsWithChildren} from 'react'
+
+interface HomeCardProps extends PropsWithChildren {
+    title: string
+    callToAction: string
+}
+
+const HomeCard: FC<HomeCardProps> = ({children, title, callToAction}) => {
+    return (
+        <>
+            <h2>{title}</h2>
+            <p>{children}</p>
+            <Button>{callToAction}</Button>
+        </>
+    )
+}
 
 const Home: FC = () => {
     return (
         <>
-            <></>
-            <></>
+            <HomeCard title="Rate Pokémon" callToAction="Start here">
+                Choose between two Pokémon which one you prefer.
+            </HomeCard>
+            <HomeCard title="Who's your favourite?" callToAction="Look here">
+                Take a look at a full ranking of Pokémon rated by you.
+            </HomeCard>
         </>
     )
 }
