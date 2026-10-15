@@ -1,4 +1,4 @@
-import {Button} from '@mantine/core'
+import {Button, Card} from '@mantine/core'
 import type {FC, PropsWithChildren} from 'react'
 
 interface HomeCardProps extends PropsWithChildren {
@@ -8,11 +8,11 @@ interface HomeCardProps extends PropsWithChildren {
 
 const HomeCard: FC<HomeCardProps> = ({children, title, callToAction}) => {
     return (
-        <>
+        <Card>
             <h2>{title}</h2>
             <p>{children}</p>
             <Button>{callToAction}</Button>
-        </>
+        </Card>
     )
 }
 
