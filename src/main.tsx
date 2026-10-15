@@ -7,3 +7,5 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter></BrowserRouter>
     </StrictMode>,
 )
+
+// Context: dark/light mode
