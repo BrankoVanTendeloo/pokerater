@@ -1,19 +1,44 @@
 ==== FETCHING LIST ====
-https://pokeapi.co/api/v2/pokemon-species/?limit=100000
-(There are currently 1025 Pokémon, 100000 is enough)
+https://pokeapi.co/api/v2/pokemon/?limit=100000
+(There are currently just over 1000 Pokémon, 100000 is enough)
 
 Returns a list "results" of objects:
     • "name" includes the name ID
-    • "url" gives another API URL to that Pokémon's species page.
+    • "url" gives another API URL to that Pokémon's page.
 
+==== POKEMON PAGE ====
+https://pokeapi.co/api/v2/pokemon/1/
 
-==== Getting species info ====
-https://pokeapi.co/api/v2/pokemon-species/1/
 {
-    "names": {
-        "name": "Bulbasaur",
-        "language": {
-            "name": "en"
+    "sprites": {
+        "showdown": {
+            "front_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif"
         }
-    }
+    },
+    "species": {
+        "name": "bulbasaur",
+        "url": "https://pokeapi.co/api/v2/pokemon-species/1/"
+    },
+    "types": [
+        {
+            "slot": 1,
+            "type": {
+                "name": "grass",
+            }
+        },
+        {
+            "slot": 2,
+            "type": {
+                "name": "poison",
+            }
+        }
+    ]
+}
+
+
+==== SPECIES PAGE ====
+https://pokeapi.co/api/v2/pokemon-species/1/
+(Get from Pokémon page)
+{
+    "names":
 }
