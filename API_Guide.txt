@@ -1,0 +1,19 @@
+==== FETCHING LIST ====
+https://pokeapi.co/api/v2/pokemon-species/?limit=100000
+(There are currently 1025 Pokémon, 100000 is enough)
+
+Returns a list "results" of objects:
+    • "name" includes the name ID
+    • "url" gives another API URL to that Pokémon's species page.
+
+
+==== Getting species info ====
+https://pokeapi.co/api/v2/pokemon-species/1/
+{
+    "names": {
+        "name": "Bulbasaur",
+        "language": {
+            "name": "en"
+        }
+    }
+}
