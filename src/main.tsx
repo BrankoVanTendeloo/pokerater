@@ -1,4 +1,4 @@
-import {MantineProvider} from '@mantine/core'
+import {AppShell, MantineProvider} from '@mantine/core'
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter} from 'react-router'
@@ -16,14 +16,18 @@ const queryClient = new QueryClient({
 })
 
 createRoot(document.getElementById('root')!).render(
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="light">
         <StrictMode>
             <BrowserRouter>
                 <QueryClientProvider client={queryClient}>
-                    <NavBar />
-                    <div className="routing-container">
-                        <Routing />
-                    </div>
+                    <AppShell header={{height: 60}} padding="md">
+                        <AppShell.Header>
+                            <NavBar />
+                        </AppShell.Header>
+                        <AppShell.Main className="routing-container">
+                            <Routing />
+                        </AppShell.Main>
+                    </AppShell>
                 </QueryClientProvider>
             </BrowserRouter>
         </StrictMode>

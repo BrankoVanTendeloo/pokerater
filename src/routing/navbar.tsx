@@ -1,13 +1,49 @@
-import type {FC} from 'react'
-import {NavLink} from 'react-router'
+import {Box, Group, NavLink} from '@mantine/core'
+import {Link, useLocation} from 'react-router'
+import ColourSchemeToggle from './colourSchemeToggle'
 
-const NavBar: FC = () => {
+const links = [
+    {label: 'Home', to: '/'},
+    {label: 'Rate', to: '/rate'},
+    {label: 'Ranking', to: '/ranking'},
+]
+
+const NavBar = () => {
+    const {pathname} = useLocation()
+
     return (
-        <nav>
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/rate">Rate</NavLink>
-            <NavLink to="/ranking">Ranking</NavLink>
-        </nav>
+        <Group h="100%" px="md" gap="md" justify="space-between" wrap="nowrap">
+            <Group gap="xs" wrap="nowrap">
+                {links.map(({label, to}) => (
+                    <NavLink
+                        key={to}
+                        component={Link}
+                        to={to}
+                        label={label}
+                        active={to === '/' ? pathname === '/' : pathname === to}
+                        variant="light"
+                        color="blue"
+                        w="auto"
+                        styles={{
+                            root: {
+                                display: 'inline-flex',
+                                flex: '0 0 auto',
+                                width: 'auto',
+                                borderRadius: 'var(--mantine-radius-md)',
+                                padding: '8px 16px',
+                            },
+                            body: {
+                                flex: '0 0 auto',
+                            },
+                        }}
+                    />
+                ))}
+            </Group>
+
+            <Box style={{flexShrink: 0}}>
+                <ColourSchemeToggle />
+            </Box>
+        </Group>
     )
 }
 
