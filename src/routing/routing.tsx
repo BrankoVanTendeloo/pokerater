@@ -14,7 +14,13 @@ const Routing: FC = () => {
                 <Route path="/rate" element={<Rate />} />
                 <Route path="/ranking" element={<Ranking />} />
 
+                <Route path="/home" element={<Navigate to="/" replace />} />
                 <Route path="/vote" element={<Navigate to="/rate" replace />} />
+                <Route path="/rank" element={<Navigate to="/rate" replace />} />
+                <Route path="/rating" element={<Navigate to="/ranking" replace />} />
+                <Route path="/ratings" element={<Navigate to="/ranking" replace />} />
+                <Route path="/rankings" element={<Navigate to="/ranking" replace />} />
+
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </Suspense>
