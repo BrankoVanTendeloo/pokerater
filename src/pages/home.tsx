@@ -1,17 +1,21 @@
-import {Button, Card} from '@mantine/core'
+import {Button, Card, SimpleGrid} from '@mantine/core'
 import type {FC, PropsWithChildren} from 'react'
+import {Link} from 'react-router'
 
 interface HomeCardProps extends PropsWithChildren {
     title: string
     callToAction: string
+    to: string
 }
 
-const HomeCard: FC<HomeCardProps> = ({children, title, callToAction}) => {
+const HomeCard: FC<HomeCardProps> = ({children, title, callToAction, to}) => {
     return (
         <Card>
             <h2>{title}</h2>
             <p>{children}</p>
-            <Button>{callToAction}</Button>
+            <Button component={Link} to={to} mt="auto">
+                {callToAction}
+            </Button>
         </Card>
     )
 }
@@ -20,12 +24,14 @@ const Home: FC = () => {
     return (
         <>
             <h1>PokéRater</h1>
-            <HomeCard title="Rate Pokémon" callToAction="Start here">
-                Choose between two Pokémon which one you prefer.
-            </HomeCard>
-            <HomeCard title="Who's your favourite?" callToAction="Look here">
-                Take a look at a full ranking of Pokémon rated by you.
-            </HomeCard>
+            <SimpleGrid cols={{base: 1, sm: 2}} spacing="lg">
+                <HomeCard title="Rate Pokémon" callToAction="Start here" to="/rate">
+                    Choose between two Pokémon which one you prefer.
+                </HomeCard>
+                <HomeCard title="Who's your favourite?" callToAction="Look here" to="/ranking">
+                    Take a look at a full ranking of Pokémon rated by you.
+                </HomeCard>
+            </SimpleGrid>
         </>
     )
 }
