@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 import {Button, Card, Group, Image, SimpleGrid, Stack, Text} from '@mantine/core'
-import { useQueries } from '@tanstack/react-query'
+import {useQueries} from '@tanstack/react-query'
+
 import {getPokemonDetails, usePokemonPool} from '../api/pokemon'
-import type { PokemonEntry } from '../api/pokemon'
-import { getRandomPokemonPair } from '../functions/pokemon'
-import { useDisplayImages } from '../context/displayImagesContext'
+import type {PokemonEntry} from '../api/pokemon'
+import {getRandomPokemonPair} from '../functions/pokemon'
+import {Result} from '../functions/elo'
+import {useDisplayImages} from '../context/displayImagesContext'
+import {usePokemonRatings} from '../context/pokemonRatingsContext'
 
 const typeImages = import.meta.glob('../assets/types/*.png', {
     eager: true,
@@ -23,14 +26,9 @@ function PokemonCard({
         <Card shadow="md" withBorder>
             <Stack align="center" gap="sm">
                 {displayImages ? (
-                    <Image
-                        src={pokemon.image}
-                        alt={pokemon.englishName}
-                        h={200}
-                        fit="contain"
-                    />
+                    <Image src={pokemon.image} alt={pokemon.englishName} h={200} fit="contain" />
                 ) : (
-                    <Text fw={600} h={200} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Text fw={600} h={200} style={{display: 'flex', alignItems: 'center'}}>
                         {pokemon.name}
                     </Text>
                 )}
@@ -44,13 +42,7 @@ function PokemonCard({
                         const image = typeImages[`../assets/types/${type}.png`]
 
                         return image ? (
-                            <Image
-                                key={type}
-                                src={image}
-                                alt={type}
-                                w={32}
-                                h={32}
-                            />
+                            <Image key={type} src={image} alt={type} w={32} h={32} />
                         ) : (
                             <Text key={type} size="sm">
                                 {type}
@@ -64,8 +56,9 @@ function PokemonCard({
 }
 
 const Rate = () => {
-    const { data: pokemonPool, isLoading, error } = usePokemonPool()
-    const { displayImages } = useDisplayImages()
+    const {data: pokemonPool, isLoading, error} = usePokemonPool()
+    const {displayImages} = useDisplayImages()
+    const {vote} = usePokemonRatings()
 
     const [pair, setPair] = useState<[PokemonEntry, PokemonEntry] | null>(null)
 
@@ -78,10 +71,10 @@ const Rate = () => {
     const pokemonQueries = useQueries({
         queries: pair
             ? pair.map(pokemon => ({
-                queryKey: ['pokemon-details', pokemon.name],
-                queryFn: () => getPokemonDetails(pokemon.name),
-                staleTime: 30 * 24 * 60 * 60 * 1000,
-            }))
+                  queryKey: ['pokemon-details', pokemon.name],
+                  queryFn: () => getPokemonDetails(pokemon.name),
+                  staleTime: 30 * 24 * 60 * 60 * 1000,
+              }))
             : [],
     })
 
@@ -108,40 +101,30 @@ const Rate = () => {
         return <Text>Waiting for Pokémon...</Text>
     }
 
+    function handleVote(result: Result) {
+        if (!pair || !pokemonPool) return
+
+        vote(pair[0].name, pair[1].name, result)
+
+        setPair(getRandomPokemonPair(pokemonPool))
+    }
+
     return (
         <Stack gap="lg">
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-                <PokemonCard
-                    pokemon={firstPokemon}
-                    displayImages={displayImages}
-                />
+            <SimpleGrid cols={{base: 1, sm: 2}} spacing="md">
+                <PokemonCard pokemon={firstPokemon} displayImages={displayImages} />
 
-                <PokemonCard
-                    pokemon={secondPokemon}
-                    displayImages={displayImages}
-                />
+                <PokemonCard pokemon={secondPokemon} displayImages={displayImages} />
             </SimpleGrid>
 
             <SimpleGrid cols={3} spacing="md">
-                <Button
-                    onClick={() => console.log('Vote:', firstPokemon.name)}
-                >
-                    Vote
-                </Button>
+                <Button onClick={() => handleVote(Result.win)}>Vote</Button>
 
-                <Button
-                    variant="light"
-                    color="gray"
-                    onClick={() => console.log('Tie')}
-                >
+                <Button variant="light" color="gray" onClick={() => handleVote(Result.tie)}>
                     Tie
                 </Button>
 
-                <Button
-                    onClick={() => console.log('Vote:', secondPokemon.name)}
-                >
-                    Vote
-                </Button>
+                <Button onClick={() => handleVote(Result.lose)}>Vote</Button>
             </SimpleGrid>
         </Stack>
     )

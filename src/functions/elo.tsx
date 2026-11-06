@@ -11,7 +11,12 @@ export type PokemonRatings = Record<string, PokemonRating>
 export const INITIAL_ELO = 1000
 export const K_FACTOR = 32
 
-export function UpdateRatings(ratings: PokemonRatings, pokemonA: string, pokemonB: string, result: Result): PokemonRatings {
+export function UpdateRatings(
+    ratings: PokemonRatings,
+    pokemonA: string,
+    pokemonB: string,
+    result: Result,
+): PokemonRatings {
     const ratingA = ratings[pokemonA] ?? {id: pokemonA, votes: 0, wins: 0, losses: 0, elo: INITIAL_ELO}
 
     const ratingB = ratings[pokemonB] ?? {id: pokemonB, votes: 0, wins: 0, losses: 0, elo: INITIAL_ELO}
