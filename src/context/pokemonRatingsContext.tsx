@@ -1,6 +1,5 @@
-import {createContext, useContext, useEffect, useState, type FC, type ReactNode} from "react"
-
-import {type Result, UpdateRatings, type PokemonRatings} from "../functions/elo"
+import {createContext, type FC, type ReactNode, useContext, useEffect, useState} from "react"
+import {type PokemonRatings, type Result, UpdateRatings} from "../functions/elo"
 
 import {LoadRatings, SaveRatings} from "../functions/ratingStorage"
 

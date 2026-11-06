@@ -4,8 +4,10 @@ import {createRoot} from "react-dom/client"
 import {BrowserRouter} from "react-router"
 import "@mantine/core/styles.css"
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
+
 import {usePokemonPool} from "./api/pokemon"
 import {DisplayImagesProvider} from "./context/displayImagesContext"
+import {PokemonRatingsProvider} from "./context/pokemonRatingsContext"
 import NavBar from "./routing/navbar"
 import Routing from "./routing/routing"
 import theme from "./theme"
@@ -28,17 +30,19 @@ createRoot(document.getElementById("root")!).render(
         <StrictMode>
             <BrowserRouter>
                 <QueryClientProvider client={queryClient}>
-                    <PokemonPoolInitializer />
-                    <DisplayImagesProvider>
-                        <AppShell header={{height: 60}} padding="md">
-                            <AppShell.Header>
-                                <NavBar />
-                            </AppShell.Header>
-                            <AppShell.Main className="routing-container">
-                                <Routing />
-                            </AppShell.Main>
-                        </AppShell>
-                    </DisplayImagesProvider>
+                    <PokemonRatingsProvider>
+                        <PokemonPoolInitializer />
+                        <DisplayImagesProvider>
+                            <AppShell header={{height: 60}} padding="md">
+                                <AppShell.Header>
+                                    <NavBar />
+                                </AppShell.Header>
+                                <AppShell.Main className="routing-container">
+                                    <Routing />
+                                </AppShell.Main>
+                            </AppShell>
+                        </DisplayImagesProvider>
+                    </PokemonRatingsProvider>
                 </QueryClientProvider>
             </BrowserRouter>
         </StrictMode>
