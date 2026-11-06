@@ -1,6 +1,7 @@
-import {Box, Group, NavLink} from '@mantine/core'
+import {Group, NavLink} from '@mantine/core'
 import {Link, useLocation} from 'react-router'
 import ColourSchemeToggle from './colourSchemeToggle'
+import DisplayImagesToggle from './displayImagesToggle'
 
 const links = [
     {label: 'Home', to: '/'},
@@ -39,9 +40,10 @@ const NavBar = () => {
                 ))}
             </Group>
 
-            <Box style={{flexShrink: 0}}>
+            <Group gap="md" style={{ flexShrink: 0 }}>
+                <DisplayImagesToggle />
                 <ColourSchemeToggle />
-            </Box>
+            </Group>
         </Group>
     )
 }

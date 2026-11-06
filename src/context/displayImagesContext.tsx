@@ -10,7 +10,7 @@ const DisplayImagesContext = createContext<DisplayImagesContextType | undefined>
 )
 
 export const DisplayImagesProvider: FC<PropsWithChildren> = ({ children }) => {
-    const [displayImages, setDisplayImages] = useState(false)
+    const [displayImages, setDisplayImages] = useState(true)
 
     return (
         <DisplayImagesContext.Provider
