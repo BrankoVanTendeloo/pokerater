@@ -22,7 +22,6 @@ const NavBar = () => {
                         label={label}
                         active={to === '/' ? pathname === '/' : pathname === to}
                         variant="light"
-                        color="blue"
                         w="auto"
                         styles={{
                             root: {
