@@ -8,6 +8,17 @@ import NavBar from './routing/navbar'
 import Routing from './routing/routing'
 import theme from './theme'
 import { DisplayImagesProvider } from './context/displayImagesContext'
+import { usePokemonPool } from './api/pokemon'
+
+const PokemonPoolInitializer = () => {
+    const { data, isLoading, error } = usePokemonPool()
+
+    console.log('Pokémon pool:', data)
+    console.log('Loading:', isLoading)
+    console.log('Error:', error)
+
+    return null
+}
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -22,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
         <StrictMode>
             <BrowserRouter>
                 <QueryClientProvider client={queryClient}>
+                    <PokemonPoolInitializer />
                     <DisplayImagesProvider>
                         <AppShell header={{height: 60}} padding="md">
                             <AppShell.Header>
@@ -38,5 +50,3 @@ createRoot(document.getElementById('root')!).render(
         </StrictMode>
     </MantineProvider>,
 )
-
-// Context: dark/light mode
