@@ -15,14 +15,94 @@ interface ResourceList {
 }
 
 const REGIONAL_EXCEPTIONS = new Set([
-    'tauros-paldea-combat-breed',
-    'tauros-paldea-blaze-breed',
-    'tauros-paldea-aqua-breed',
-    'darmanitan-galar-standard',
+    "tauros-paldea-combat-breed",
+    "tauros-paldea-blaze-breed",
+    "tauros-paldea-aqua-breed",
+    "darmanitan-galar-standard",
+    "lycanroc-midday",
+    "deoxys-normal",
+    "wormadam-plant",
+    "giratina-altered",
+    "shaymin-land",
+    "basculin-red-striped",
+    "frillish-male",
+    "jellicent-male",
+    "tornadus-incarnate",
+    "thundurus-incarnate",
+    "enamorus-incarnate",
+    "landorus-incarnate",
+    "tornadus-therian",
+    "thundurus-therian",
+    "enamorus-therian",
+    "landorus-therian",
+    "meloetta-aria",
+    "pyroar-male",
+    "meowstic-male",
+    "aegislash-shield",
+    "pumpkaboo-average",
+    "gourgeist-average",
+    "zygarde-50",
+    "oricorio-baile",
+    "wishiwashi-solo",
+    "minior-red-meteor",
+    "mimikyu-disguised",
+    "toxtricity-amped",
+    "eiscue-ice",
+    "indeedee-male",
+    "morpeko-full-belly",
+    "urshifu-single-strike",
+    "basculegion-male",
+    "oinkologne-male",
+    "maushold-family-of-four",
+    "squawkabilly-green-plumage",
+    "palafin-hero",
+    "tatsugiri-curly",
+    "dudunsparce-two-segment",
+    "keldeo-resolute",
 ])
 
 const REGIONAL_EXCLUSIONS = new Set([
-    'raticate-totem-alola',
+    "raticate-totem-alola",
+])
+
+const SPECIES_EXCLUSIONS = new Set([
+    "darmanitan",
+    "lycanroc",
+    "deoxys",
+    "wormadam",
+    "giratina",
+    "shaymin",
+    "basculin",
+    "frillish",
+    "jellicent",
+    "tornadus",
+    "thundurus",
+    "enamorus",
+    "landorus",
+    "keldeo",
+    "meloetta",
+    "pyroar",
+    "meowstic",
+    "aegislash",
+    "pumpkaboo",
+    "gourgeist",
+    "zygarde",
+    "oricorio",
+    "wishiwashi",
+    "minior",
+    "mimikyu",
+    "toxtricity",
+    "eiscue",
+    "indeedee",
+    "morpeko",
+    "urshifu",
+    "basculegion",
+    "oinkologne",
+    "maushold",
+    "squawkabilly",
+    "palafin",
+    "tatsugiri",
+    "dudunsparce",
 ])
 
 async function fetchData<T>(url: string): Promise<T> {
@@ -51,8 +131,12 @@ export async function getPokemonPool(): Promise<PokemonEntry[]> {
         return regionNames.some(suffix => name.endsWith(suffix))
     })
 
+    const defaultPokemon = species.results.filter(
+        ({ name }) => !SPECIES_EXCLUSIONS.has(name)
+    )
+
     const combined = [
-        ...species.results,
+        ...defaultPokemon,
         ...regionalPokemon,
     ]
 
