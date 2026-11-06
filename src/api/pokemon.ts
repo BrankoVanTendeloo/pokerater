@@ -61,10 +61,79 @@ export async function getPokemonPool(): Promise<PokemonEntry[]> {
     )
 }
 
+interface PokemonDetailsResponse {
+    name: string
+    types: {
+        type: {
+            name: string
+        }
+    }[]
+    sprites: {
+        other: {
+            'official-artwork': {
+                front_default: string | null
+            }
+        }
+        front_default: string | null
+    }
+    species: {
+        url: string
+    }
+}
+
+interface PokemonSpeciesResponse {
+    names: {
+        name: string
+        language: {
+            name: string
+        }
+    }[]
+}
+
+export interface PokemonDetails {
+    name: string
+    englishName: string
+    types: string[]
+    image: string | null
+}
+
+export async function getPokemonDetails(
+    name: string,
+): Promise<PokemonDetails> {
+    const pokemon = await fetchData<PokemonDetailsResponse>(
+        `${BASE_URL}/pokemon/${name}`,
+    )
+
+    const species = await fetchData<PokemonSpeciesResponse>(
+        pokemon.species.url,
+    )
+
+    const englishName = species.names.find(
+        entry => entry.language.name === 'en',
+    )?.name ?? pokemon.name
+
+    return {
+        name: pokemon.name,
+        englishName,
+        types: pokemon.types.map(entry => entry.type.name),
+        image:
+            pokemon.sprites.other['official-artwork'].front_default ??
+            pokemon.sprites.front_default,
+    }
+}
+
 export function usePokemonPool() {
   return useQuery({
     queryKey: ['pokemon-pool'],
     queryFn: getPokemonPool,
     staleTime: CACHE_TIME,
   })
+}
+
+export function usePokemonDetails(name: string) {
+    return useQuery({
+        queryKey: ['pokemon-details', name],
+        queryFn: () => getPokemonDetails(name),
+        staleTime: 30 * 24 * 60 * 60 * 1000,
+    })
 }
