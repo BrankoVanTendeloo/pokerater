@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
+import {useQuery} from "@tanstack/react-query"
 
-const BASE_URL = 'https://pokeapi.co/api/v2'
+const BASE_URL = "https://pokeapi.co/api/v2"
 
 const CACHE_TIME = 7 * 24 * 60 * 60 * 1000
 
@@ -61,9 +61,7 @@ const REGIONAL_EXCEPTIONS = new Set([
     "keldeo-resolute",
 ])
 
-const REGIONAL_EXCLUSIONS = new Set([
-    "raticate-totem-alola",
-])
+const REGIONAL_EXCLUSIONS = new Set(["raticate-totem-alola"])
 
 const SPECIES_EXCLUSIONS = new Set([
     "darmanitan",
@@ -124,25 +122,18 @@ export async function getPokemonPool(): Promise<PokemonEntry[]> {
 
     const regionNames = regions.results.map(region => `-${region.name}`)
 
-    const regionalPokemon = pokemon.results.filter(({ name }) => {
+    const regionalPokemon = pokemon.results.filter(({name}) => {
         if (REGIONAL_EXCLUSIONS.has(name)) return false
         if (REGIONAL_EXCEPTIONS.has(name)) return true
 
         return regionNames.some(suffix => name.endsWith(suffix))
     })
 
-    const defaultPokemon = species.results.filter(
-        ({ name }) => !SPECIES_EXCLUSIONS.has(name)
-    )
+    const defaultPokemon = species.results.filter(({name}) => !SPECIES_EXCLUSIONS.has(name))
 
-    const combined = [
-        ...defaultPokemon,
-        ...regionalPokemon,
-    ]
+    const combined = [...defaultPokemon, ...regionalPokemon]
 
-    return Array.from(
-        new Map(combined.map(entry => [entry.name, entry])).values()
-    )
+    return Array.from(new Map(combined.map(entry => [entry.name, entry])).values())
 }
 
 interface PokemonDetailsResponse {
@@ -154,7 +145,7 @@ interface PokemonDetailsResponse {
     }[]
     sprites: {
         other: {
-            'official-artwork': {
+            "official-artwork": {
                 front_default: string | null
             }
         }
@@ -181,42 +172,32 @@ export interface PokemonDetails {
     image: string | null
 }
 
-export async function getPokemonDetails(
-    name: string,
-): Promise<PokemonDetails> {
-    const pokemon = await fetchData<PokemonDetailsResponse>(
-        `${BASE_URL}/pokemon/${name}`,
-    )
+export async function getPokemonDetails(name: string): Promise<PokemonDetails> {
+    const pokemon = await fetchData<PokemonDetailsResponse>(`${BASE_URL}/pokemon/${name}`)
 
-    const species = await fetchData<PokemonSpeciesResponse>(
-        pokemon.species.url,
-    )
+    const species = await fetchData<PokemonSpeciesResponse>(pokemon.species.url)
 
-    const englishName = species.names.find(
-        entry => entry.language.name === 'en',
-    )?.name ?? pokemon.name
+    const englishName = species.names.find(entry => entry.language.name === "en")?.name ?? pokemon.name
 
     return {
         name: pokemon.name,
         englishName,
         types: pokemon.types.map(entry => entry.type.name),
-        image:
-            pokemon.sprites.other['official-artwork'].front_default ??
-            pokemon.sprites.front_default,
+        image: pokemon.sprites.other["official-artwork"].front_default ?? pokemon.sprites.front_default,
     }
 }
 
 export function usePokemonPool() {
-  return useQuery({
-    queryKey: ['pokemon-pool'],
-    queryFn: getPokemonPool,
-    staleTime: CACHE_TIME,
-  })
+    return useQuery({
+        queryKey: ["pokemon-pool"],
+        queryFn: getPokemonPool,
+        staleTime: CACHE_TIME,
+    })
 }
 
 export function usePokemonDetails(name: string) {
     return useQuery({
-        queryKey: ['pokemon-details', name],
+        queryKey: ["pokemon-details", name],
         queryFn: () => getPokemonDetails(name),
         staleTime: 30 * 24 * 60 * 60 * 1000,
     })

@@ -1,18 +1,17 @@
-import {useEffect, useState} from 'react'
-import {Button, Card, Group, Image, SimpleGrid, Stack, Text} from '@mantine/core'
-import {useQueries} from '@tanstack/react-query'
+import {Button, Card, Group, Image, SimpleGrid, Stack, Text} from "@mantine/core"
+import {useQueries} from "@tanstack/react-query"
+import {useEffect, useState} from "react"
+import type {PokemonEntry} from "../api/pokemon"
+import {getPokemonDetails, usePokemonPool} from "../api/pokemon"
+import {useDisplayImages} from "../context/displayImagesContext"
+import {usePokemonRatings} from "../context/pokemonRatingsContext"
+import {Result} from "../functions/elo"
+import {getRandomPokemonPair} from "../functions/pokemon"
 
-import {getPokemonDetails, usePokemonPool} from '../api/pokemon'
-import type {PokemonEntry} from '../api/pokemon'
-import {getRandomPokemonPair} from '../functions/pokemon'
-import {Result} from '../functions/elo'
-import {useDisplayImages} from '../context/displayImagesContext'
-import {usePokemonRatings} from '../context/pokemonRatingsContext'
-
-const typeImages = import.meta.glob('../assets/types/*.png', {
+const typeImages = import.meta.glob("../assets/types/*.png", {
     eager: true,
-    query: '?url',
-    import: 'default',
+    query: "?url",
+    import: "default",
 }) as Record<string, string>
 
 function PokemonCard({
@@ -28,7 +27,7 @@ function PokemonCard({
                 {displayImages ? (
                     <Image src={pokemon.image} alt={pokemon.englishName} h={200} fit="contain" />
                 ) : (
-                    <Text fw={600} h={200} style={{display: 'flex', alignItems: 'center'}}>
+                    <Text fw={600} h={200} style={{display: "flex", alignItems: "center"}}>
                         {pokemon.name}
                     </Text>
                 )}
@@ -71,7 +70,7 @@ const Rate = () => {
     const pokemonQueries = useQueries({
         queries: pair
             ? pair.map(pokemon => ({
-                  queryKey: ['pokemon-details', pokemon.name],
+                  queryKey: ["pokemon-details", pokemon.name],
                   queryFn: () => getPokemonDetails(pokemon.name),
                   staleTime: 30 * 24 * 60 * 60 * 1000,
               }))

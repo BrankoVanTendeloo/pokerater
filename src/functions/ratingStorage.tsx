@@ -1,6 +1,6 @@
-import type {PokemonRatings} from './elo'
+import type {PokemonRatings} from "./elo"
 
-const STORAGE_KEY = 'pokerater-ratings'
+const STORAGE_KEY = "pokerater-ratings"
 
 export function LoadRatings(): PokemonRatings {
     try {

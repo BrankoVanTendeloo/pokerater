@@ -1,8 +1,8 @@
-import {createContext, useContext, useEffect, useState, type FC, type ReactNode} from 'react'
+import {createContext, useContext, useEffect, useState, type FC, type ReactNode} from "react"
 
-import {type Result, UpdateRatings, type PokemonRatings} from '../functions/elo'
+import {type Result, UpdateRatings, type PokemonRatings} from "../functions/elo"
 
-import {LoadRatings, SaveRatings} from '../functions/ratingStorage'
+import {LoadRatings, SaveRatings} from "../functions/ratingStorage"
 
 interface PokemonRatingsContextValue {
     ratings: PokemonRatings
@@ -33,7 +33,7 @@ export function usePokemonRatings() {
     const context = useContext(PokemonRatingsContext)
 
     if (!context) {
-        throw new Error('usePokemonRatings must be used within a PokemonRatingsProvider')
+        throw new Error("usePokemonRatings must be used within a PokemonRatingsProvider")
     }
 
     return context

@@ -1,10 +1,10 @@
-import {type FC, Suspense} from 'react'
-import {Navigate, Route, Routes} from 'react-router'
-import Home from '../pages/home'
-import LoadingPage from '../pages/loadingPage'
-import NotFoundPage from '../pages/notFoundPage'
-import Ranking from '../pages/ranking'
-import Rate from '../pages/rate'
+import {type FC, Suspense} from "react"
+import {Navigate, Route, Routes} from "react-router"
+import Home from "../pages/home"
+import LoadingPage from "../pages/loadingPage"
+import NotFoundPage from "../pages/notFoundPage"
+import Ranking from "../pages/ranking"
+import Rate from "../pages/rate"
 
 const Routing: FC = () => {
     return (

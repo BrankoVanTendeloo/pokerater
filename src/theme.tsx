@@ -1,13 +1,13 @@
-import { createTheme, virtualColor } from '@mantine/core'
+import {createTheme, virtualColor} from "@mantine/core"
 
 const theme = createTheme({
-    primaryColor: 'poke',
+    primaryColor: "poke",
 
     colors: {
         poke: virtualColor({
-            name: 'poke',
-            light: 'red',
-            dark: 'yellow',
+            name: "poke",
+            light: "red",
+            dark: "yellow",
         }),
     },
 
@@ -19,7 +19,7 @@ const theme = createTheme({
     components: {
         Card: {
             defaultProps: {
-                shadow: 'md',
+                shadow: "md",
                 withBorder: true,
             },
         },

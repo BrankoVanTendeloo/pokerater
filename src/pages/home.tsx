@@ -1,6 +1,6 @@
-import {Button, Card, SimpleGrid} from '@mantine/core'
-import type {FC, PropsWithChildren} from 'react'
-import {Link} from 'react-router'
+import {Button, Card, SimpleGrid} from "@mantine/core"
+import type {FC, PropsWithChildren} from "react"
+import {Link} from "react-router"
 
 interface HomeCardProps extends PropsWithChildren {
     title: string

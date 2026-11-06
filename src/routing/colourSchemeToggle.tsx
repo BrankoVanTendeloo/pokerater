@@ -1,12 +1,12 @@
-import {ActionIcon, useComputedColorScheme, useMantineColorScheme} from '@mantine/core'
-import {IconMoon, IconSun} from '@tabler/icons-react'
+import {ActionIcon, useComputedColorScheme, useMantineColorScheme} from "@mantine/core"
+import {IconMoon, IconSun} from "@tabler/icons-react"
 
 const ColorSchemeToggle = () => {
     const {setColorScheme} = useMantineColorScheme()
-    const computedColorScheme = useComputedColorScheme('light')
+    const computedColorScheme = useComputedColorScheme("light")
 
     const toggleColorScheme = () => {
-        setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark')
+        setColorScheme(computedColorScheme === "dark" ? "light" : "dark")
     }
 
     return (
@@ -17,7 +17,7 @@ const ColorSchemeToggle = () => {
             radius="md"
             aria-label="Toggle color scheme"
         >
-            {computedColorScheme === 'dark' ? <IconSun size={18} stroke={1.5} /> : <IconMoon size={18} stroke={1.5} />}
+            {computedColorScheme === "dark" ? <IconSun size={18} stroke={1.5} /> : <IconMoon size={18} stroke={1.5} />}
         </ActionIcon>
     )
 }
