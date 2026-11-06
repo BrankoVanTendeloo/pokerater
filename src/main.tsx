@@ -11,12 +11,7 @@ import { DisplayImagesProvider } from './context/displayImagesContext'
 import { usePokemonPool } from './api/pokemon'
 
 const PokemonPoolInitializer = () => {
-    const { data, isLoading, error } = usePokemonPool()
-
-    console.log('Pokémon pool:', data)
-    console.log('Loading:', isLoading)
-    console.log('Error:', error)
-
+    usePokemonPool()
     return null
 }
 
