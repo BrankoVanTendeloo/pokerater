@@ -86,7 +86,7 @@ const Rate = () => {
     })
 
     if (isLoading || !pair) {
-        return <Text>Loading Pokémon...</Text>
+        return <Text>Loading Pokémon... Reload if it doesn't load.</Text>
     }
 
     if (error) {
@@ -94,7 +94,7 @@ const Rate = () => {
     }
 
     if (pokemonQueries.some(query => query.isLoading)) {
-        return <Text>Loading Pokémon details...</Text>
+        return <Text>Loading Pokémon details... Reload if it doesn't load.</Text>
     }
 
     if (pokemonQueries.some(query => query.error)) {
