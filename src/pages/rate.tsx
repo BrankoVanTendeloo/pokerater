@@ -6,7 +6,7 @@ import type { PokemonEntry } from '../api/pokemon'
 import { getRandomPokemonPair } from '../functions/pokemon'
 import { useDisplayImages } from '../context/displayImagesContext'
 
-const typeImages = import.meta.glob('../assets/type/*.png', {
+const typeImages = import.meta.glob('../assets/types/*.png', {
     eager: true,
     query: '?url',
     import: 'default',
@@ -41,7 +41,7 @@ function PokemonCard({
 
                 <Group gap="xs" justify="center">
                     {pokemon.types.map(type => {
-                        const image = typeImages[`../assets/type/${type}.png`]
+                        const image = typeImages[`../assets/types/${type}.png`]
 
                         return image ? (
                             <Image
