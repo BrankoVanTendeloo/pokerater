@@ -15,6 +15,15 @@ const theme = createTheme({
         light: 6,
         dark: 4,
     },
+
+    components: {
+        Card: {
+            defaultProps: {
+                shadow: 'md',
+                withBorder: true,
+            },
+        },
+    },
 })
 
 export default theme
