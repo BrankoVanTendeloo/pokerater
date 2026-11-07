@@ -1,36 +1,30 @@
-import type { PokemonEntry } from '../api/pokemon'
+import type {PokemonEntry} from "../api/pokemon"
+import type {PokemonRatings} from "./elo"
 
-function getTotalVotes(_pokemon: PokemonEntry): number {
-    return 0
+function getTotalVotes(pokemon: PokemonEntry, ratings: PokemonRatings): number {
+    return ratings[pokemon.name]?.votes ?? 0
 }
 
-function selectWeightedRandom(pokemon: PokemonEntry[]): PokemonEntry {
-    const weights = pokemon.map(entry => 1 / (getTotalVotes(entry) + 1))
-    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
+function selectWeightedRandom(pokemon: PokemonEntry[], ratings: PokemonRatings): PokemonEntry {
+    const minimumVotes = Math.min(...pokemon.map(entry => getTotalVotes(entry, ratings)))
 
-    let random = Math.random() * totalWeight
+    const candidates = pokemon.filter(entry => getTotalVotes(entry, ratings) === minimumVotes)
 
-    for (let i = 0; i < pokemon.length; i++) {
-        random -= weights[i]
+    const randomIndex = Math.floor(Math.random() * candidates.length)
 
-        if (random <= 0) {
-            return pokemon[i]
-        }
-    }
-
-    return pokemon[pokemon.length - 1]
+    return candidates[randomIndex]
 }
 
-export function getRandomPokemonPair(
-    pokemon: PokemonEntry[],
-): [PokemonEntry, PokemonEntry] {
+export function getRandomPokemonPair(pokemon: PokemonEntry[], ratings: PokemonRatings): [PokemonEntry, PokemonEntry] {
     if (pokemon.length < 2) {
-        throw new Error('At least two Pokémon are required')
+        throw new Error("At least two Pokémon are required")
     }
 
-    const first = selectWeightedRandom(pokemon)
+    const first = selectWeightedRandom(pokemon, ratings)
+
     const remaining = pokemon.filter(entry => entry.name !== first.name)
-    const second = selectWeightedRandom(remaining)
+
+    const second = selectWeightedRandom(remaining, ratings)
 
     return [first, second]
 }

@@ -78,16 +78,16 @@ interface DisplayedPair {
 const Rate = () => {
     const {data: pokemonPool, isLoading, error} = usePokemonPool()
     const {displayImages} = useDisplayImages()
-    const {vote} = usePokemonRatings()
+    const {vote, ratings} = usePokemonRatings()
 
     const [pair, setPair] = useState<[PokemonEntry, PokemonEntry] | null>(null)
     const [displayedPair, setDisplayedPair] = useState<DisplayedPair | null>(null)
 
     useEffect(() => {
         if (pokemonPool && !pair) {
-            setPair(getRandomPokemonPair(pokemonPool))
+            setPair(getRandomPokemonPair(pokemonPool, ratings))
         }
-    }, [pokemonPool, pair])
+    }, [pokemonPool, pair, ratings])
 
     const pokemonQueries = useQueries({
         queries: pair
@@ -135,7 +135,7 @@ const Rate = () => {
         if (!canVote || !pair || !pokemonPool) return
 
         vote(pair[0].name, pair[1].name, result)
-        setPair(getRandomPokemonPair(pokemonPool))
+        setPair(getRandomPokemonPair(pokemonPool, ratings))
     }
 
     return (
