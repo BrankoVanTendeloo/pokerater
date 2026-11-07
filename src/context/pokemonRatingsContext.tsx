@@ -7,6 +7,7 @@ interface PokemonRatingsContextValue {
     ratings: PokemonRatings
     vote: (pokemonA: string, pokemonB: string, result: Result) => void
     replaceRatings: (newRatings: PokemonRatings) => void
+    resetRatings: () => void
 }
 
 const PokemonRatingsContext = createContext<PokemonRatingsContextValue | null>(null)
@@ -30,8 +31,12 @@ export const PokemonRatingsProvider: FC<PokemonRatingsProviderProps> = ({childre
         setRatings(newRatings)
     }
 
+    function resetRatings() {
+        setRatings({})
+    }
+
     return (
-        <PokemonRatingsContext.Provider value={{ratings, vote, replaceRatings}}>
+        <PokemonRatingsContext.Provider value={{ratings, vote, replaceRatings, resetRatings}}>
             {children}
         </PokemonRatingsContext.Provider>
     )

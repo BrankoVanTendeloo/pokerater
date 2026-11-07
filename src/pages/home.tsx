@@ -52,7 +52,7 @@ function isPokemonRatings(value: unknown): value is PokemonRatings {
 }
 
 const Home: FC = () => {
-    const {ratings, replaceRatings} = usePokemonRatings()
+    const {ratings, replaceRatings, resetRatings} = usePokemonRatings()
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [message, setMessage] = useState("")
@@ -99,6 +99,17 @@ const Home: FC = () => {
         }
     }
 
+    function handleReset() {
+        const confirmed = window.confirm(
+            "Are you sure you want to reset all ratings? This cannot be undone unless you have a backup.",
+        )
+
+        if (!confirmed) return
+
+        resetRatings()
+        setMessage("All ratings have been reset.")
+    }
+
     return (
         <>
             <h1>PokéRater</h1>
@@ -137,6 +148,9 @@ const Home: FC = () => {
 
                         <Button onClick={handleImport} disabled={!selectedFile}>
                             Import backup
+                        </Button>
+                        <Button color="red" variant="light" onClick={handleReset}>
+                            Reset ratings
                         </Button>
                     </Group>
 
