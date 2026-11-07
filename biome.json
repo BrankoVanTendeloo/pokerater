@@ -23,7 +23,6 @@
         "rules": {
             "preset": "recommended",
             "suspicious": {
-                "noAlert": "error",
                 "noConsole": {
                     "level": "error",
                     "options": {

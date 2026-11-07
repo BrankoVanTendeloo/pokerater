@@ -6,6 +6,7 @@ import {LoadRatings, SaveRatings} from "../functions/ratingStorage"
 interface PokemonRatingsContextValue {
     ratings: PokemonRatings
     vote: (pokemonA: string, pokemonB: string, result: Result) => void
+    replaceRatings: (newRatings: PokemonRatings) => void
 }
 
 const PokemonRatingsContext = createContext<PokemonRatingsContextValue | null>(null)
@@ -25,7 +26,15 @@ export const PokemonRatingsProvider: FC<PokemonRatingsProviderProps> = ({childre
         setRatings(currentRatings => UpdateRatings(currentRatings, pokemonA, pokemonB, result))
     }
 
-    return <PokemonRatingsContext.Provider value={{ratings, vote}}>{children}</PokemonRatingsContext.Provider>
+    function replaceRatings(newRatings: PokemonRatings) {
+        setRatings(newRatings)
+    }
+
+    return (
+        <PokemonRatingsContext.Provider value={{ratings, vote, replaceRatings}}>
+            {children}
+        </PokemonRatingsContext.Provider>
+    )
 }
 
 export function usePokemonRatings() {
