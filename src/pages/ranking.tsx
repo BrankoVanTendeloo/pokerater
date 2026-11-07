@@ -147,6 +147,12 @@ const Ranking = () => {
 
     return (
         <>
+            <Text size="sm" c="dimmed" mb="xs">
+                {ratingList.length} Pokémon rated
+            </Text>
+            <Text size="sm" c="dimmed" mb="xs">
+                {Object.values(ratings).reduce((total, pokemon) => total + pokemon.votes, 0) / 2} votes
+            </Text>
             <Select
                 label="Filter by type"
                 placeholder="All types"
