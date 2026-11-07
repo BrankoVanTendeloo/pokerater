@@ -95,7 +95,7 @@ const RankingStats: FC<RankingStatsProps> = ({pokemonCount, totalMatchups}) => {
             </Text>
 
             <Text size="sm" c="dimmed" mb="xs">
-                {totalMatchups} total matchups
+                {totalMatchups} total votes
             </Text>
         </>
     )
