@@ -1,6 +1,6 @@
 import {Button, Card, Group, Image, SimpleGrid, Stack, Text} from "@mantine/core"
 import {useQueries} from "@tanstack/react-query"
-import {useEffect, useState} from "react"
+import {type FC, useEffect, useState} from "react"
 
 import type {PokemonDetails, PokemonEntry} from "../api/pokemon"
 import {getPokemonDetails, usePokemonPool} from "../api/pokemon"
@@ -15,13 +15,35 @@ const typeImages = import.meta.glob("../assets/types/*.png", {
     import: "default",
 }) as Record<string, string>
 
+interface PokemonTypesProps {
+    types: string[]
+}
+
+const PokemonTypes: FC<PokemonTypesProps> = ({types}) => {
+    return (
+        <Group gap="xs" justify="center">
+            {types.map(type => {
+                const image = typeImages[`../assets/types/${type}.png`]
+
+                return image ? (
+                    <Image key={type} src={image} alt={type} w={32} h={32} />
+                ) : (
+                    <Text key={type} size="sm">
+                        {type}
+                    </Text>
+                )
+            })}
+        </Group>
+    )
+}
+
 interface PokemonCardProps {
     pokemon: PokemonDetails | null
     placeholderName: string
     displayImages: boolean
 }
 
-function PokemonCard({pokemon, placeholderName, displayImages}: PokemonCardProps) {
+const PokemonCard: FC<PokemonCardProps> = ({pokemon, placeholderName, displayImages}) => {
     return (
         <Card shadow="md" withBorder h={360}>
             {pokemon ? (
@@ -45,19 +67,7 @@ function PokemonCard({pokemon, placeholderName, displayImages}: PokemonCardProps
                         {pokemon.englishName}
                     </Text>
 
-                    <Group gap="xs" justify="center">
-                        {pokemon.types.map(type => {
-                            const image = typeImages[`../assets/types/${type}.png`]
-
-                            return image ? (
-                                <Image key={type} src={image} alt={type} w={32} h={32} />
-                            ) : (
-                                <Text key={type} size="sm">
-                                    {type}
-                                </Text>
-                            )
-                        })}
-                    </Group>
+                    <PokemonTypes types={pokemon.types} />
                 </Stack>
             ) : (
                 <Stack h="100%" align="center" justify="center">
@@ -70,12 +80,51 @@ function PokemonCard({pokemon, placeholderName, displayImages}: PokemonCardProps
     )
 }
 
+interface PokemonPairProps {
+    pokemon: [PokemonDetails | null, PokemonDetails | null]
+    names: [string, string]
+    displayImages: boolean
+}
+
+const PokemonPair: FC<PokemonPairProps> = ({pokemon, names, displayImages}) => {
+    return (
+        <SimpleGrid cols={{base: 1, sm: 2}} spacing="md">
+            <PokemonCard pokemon={pokemon[0]} placeholderName={names[0]} displayImages={displayImages} />
+
+            <PokemonCard pokemon={pokemon[1]} placeholderName={names[1]} displayImages={displayImages} />
+        </SimpleGrid>
+    )
+}
+
+interface VoteButtonsProps {
+    canVote: boolean
+    onVote: (result: Result) => void
+}
+
+const VoteButtons: FC<VoteButtonsProps> = ({canVote, onVote}) => {
+    return (
+        <SimpleGrid cols={3} spacing="md">
+            <Button disabled={!canVote} onClick={() => onVote(Result.win)}>
+                Vote
+            </Button>
+
+            <Button variant="light" color="gray" disabled={!canVote} onClick={() => onVote(Result.tie)}>
+                Tie
+            </Button>
+
+            <Button disabled={!canVote} onClick={() => onVote(Result.lose)}>
+                Vote
+            </Button>
+        </SimpleGrid>
+    )
+}
+
 interface DisplayedPair {
     names: [string, string]
     pokemon: [PokemonDetails, PokemonDetails]
 }
 
-const Rate = () => {
+const Rate: FC = () => {
     const {data: pokemonPool, isLoading, error} = usePokemonPool()
     const {displayImages} = useDisplayImages()
     const {vote, ratings} = usePokemonRatings()
@@ -141,33 +190,13 @@ const Rate = () => {
 
     return (
         <Stack gap="lg">
-            <SimpleGrid cols={{base: 1, sm: 2}} spacing="md">
-                <PokemonCard
-                    pokemon={currentPokemon[0]}
-                    placeholderName={pair?.[0].name ?? ""}
-                    displayImages={displayImages}
-                />
+            <PokemonPair
+                pokemon={currentPokemon}
+                names={[pair?.[0].name ?? "", pair?.[1].name ?? ""]}
+                displayImages={displayImages}
+            />
 
-                <PokemonCard
-                    pokemon={currentPokemon[1]}
-                    placeholderName={pair?.[1].name ?? ""}
-                    displayImages={displayImages}
-                />
-            </SimpleGrid>
-
-            <SimpleGrid cols={3} spacing="md">
-                <Button disabled={!canVote} onClick={() => handleVote(Result.win)}>
-                    Vote
-                </Button>
-
-                <Button variant="light" color="gray" disabled={!canVote} onClick={() => handleVote(Result.tie)}>
-                    Tie
-                </Button>
-
-                <Button disabled={!canVote} onClick={() => handleVote(Result.lose)}>
-                    Vote
-                </Button>
-            </SimpleGrid>
+            <VoteButtons canVote={canVote} onVote={handleVote} />
         </Stack>
     )
 }
