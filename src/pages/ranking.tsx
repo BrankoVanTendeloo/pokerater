@@ -1,6 +1,6 @@
 import {Image, ScrollArea, Select, Table, Text} from "@mantine/core"
 import {useQueries} from "@tanstack/react-query"
-import {useMemo, useState} from "react"
+import {type FC, useMemo, useState} from "react"
 
 import {getPokemonDetails} from "../api/pokemon"
 import {useDisplayImages} from "../context/displayImagesContext"
@@ -38,10 +38,232 @@ const typeOptions = [
 }))
 
 type SortKey = "rank" | "name" | "elo" | "votes" | "wins" | "losses" | "ties"
-
 type SortDirection = "asc" | "desc"
 
-const Ranking = () => {
+interface RankedPokemon extends PokemonRating {
+    rank: number
+}
+
+interface PokemonDetails {
+    englishName: string
+    image: string | null
+    types: string[]
+}
+
+interface RankingStatsProps {
+    pokemonCount: number
+    totalMatchups: number
+}
+
+interface RankingTypeFilterProps {
+    selectedType: string | null
+    onTypeChange: (type: string | null) => void
+}
+
+interface SortHeaderProps {
+    label: string
+    sortKey: SortKey
+    currentSortKey: SortKey
+    sortDirection: SortDirection
+    onSort: (key: SortKey) => void
+}
+
+interface PokemonTypesProps {
+    types: string[]
+}
+
+interface RankingRowProps {
+    pokemon: RankedPokemon
+    details: PokemonDetails | undefined
+    displayImages: boolean
+}
+
+interface RankingTableProps {
+    pokemon: RankedPokemon[]
+    pokemonDetails: Map<string, PokemonDetails | undefined>
+    displayImages: boolean
+    sortKey: SortKey
+    sortDirection: SortDirection
+    onSort: (key: SortKey) => void
+}
+
+const RankingStats: FC<RankingStatsProps> = ({pokemonCount, totalMatchups}) => {
+    return (
+        <>
+            <Text size="sm" c="dimmed" mb="xs">
+                {pokemonCount} Pokémon rated
+            </Text>
+
+            <Text size="sm" c="dimmed" mb="xs">
+                {totalMatchups} total matchups
+            </Text>
+        </>
+    )
+}
+
+const RankingTypeFilter: FC<RankingTypeFilterProps> = ({selectedType, onTypeChange}) => {
+    return (
+        <Select
+            label="Filter by type"
+            placeholder="All types"
+            data={typeOptions}
+            value={selectedType}
+            onChange={onTypeChange}
+            clearable
+            w={220}
+            mb="md"
+        />
+    )
+}
+
+const SortHeader: FC<SortHeaderProps> = ({label, sortKey, currentSortKey, sortDirection, onSort}) => {
+    const indicator = currentSortKey !== sortKey ? "" : sortDirection === "asc" ? " ▲" : " ▼"
+
+    return (
+        <Table.Th
+            onClick={() => onSort(sortKey)}
+            style={{
+                cursor: "pointer",
+                userSelect: "none",
+                whiteSpace: "nowrap",
+            }}
+        >
+            {label}
+            {indicator}
+        </Table.Th>
+    )
+}
+
+const PokemonTypes: FC<PokemonTypesProps> = ({types}) => {
+    return (
+        <div style={{display: "flex", gap: 4}}>
+            {types.map(type => {
+                const image = typeImages[`../assets/types/${type}.png`]
+
+                return image ? (
+                    <Image key={type} src={image} alt={type} w={24} h={24} />
+                ) : (
+                    <Text key={type} size="xs">
+                        {type}
+                    </Text>
+                )
+            })}
+        </div>
+    )
+}
+
+const RankingRow: FC<RankingRowProps> = ({pokemon, details, displayImages}) => {
+    const ties = pokemon.votes - pokemon.wins - pokemon.losses
+
+    return (
+        <Table.Tr>
+            <Table.Td>{pokemon.rank}</Table.Td>
+
+            {displayImages && (
+                <Table.Td>
+                    <Image
+                        src={details?.image ?? undefined}
+                        alt={details?.englishName ?? pokemon.id}
+                        h={48}
+                        w={48}
+                        fit="contain"
+                    />
+                </Table.Td>
+            )}
+
+            <Table.Td>
+                {details ? (
+                    <PokemonTypes types={details.types} />
+                ) : (
+                    <Text c="dimmed" size="xs">
+                        Loading...
+                    </Text>
+                )}
+            </Table.Td>
+
+            <Table.Td>{details?.englishName ?? pokemon.id}</Table.Td>
+            <Table.Td>{Math.round(pokemon.elo)}</Table.Td>
+            <Table.Td>{pokemon.votes}</Table.Td>
+            <Table.Td>{pokemon.wins}</Table.Td>
+            <Table.Td>{pokemon.losses}</Table.Td>
+            <Table.Td>{ties}</Table.Td>
+        </Table.Tr>
+    )
+}
+
+const RankingTable: FC<RankingTableProps> = ({
+    pokemon,
+    pokemonDetails,
+    displayImages,
+    sortKey,
+    sortDirection,
+    onSort,
+}) => {
+    const headers: [string, SortKey][] = [
+        ["Name", "name"],
+        ["Rating", "elo"],
+        ["Votes", "votes"],
+        ["Wins", "wins"],
+        ["Losses", "losses"],
+        ["Ties", "ties"],
+    ]
+
+    return (
+        <ScrollArea>
+            <Table striped highlightOnHover withTableBorder>
+                <Table.Thead>
+                    <Table.Tr>
+                        <SortHeader
+                            label="Rank"
+                            sortKey="rank"
+                            currentSortKey={sortKey}
+                            sortDirection={sortDirection}
+                            onSort={onSort}
+                        />
+
+                        {displayImages && <Table.Th>Image</Table.Th>}
+
+                        <Table.Th>Types</Table.Th>
+
+                        {headers.map(([label, key]) => (
+                            <SortHeader
+                                key={key}
+                                label={label}
+                                sortKey={key}
+                                currentSortKey={sortKey}
+                                sortDirection={sortDirection}
+                                onSort={onSort}
+                            />
+                        ))}
+                    </Table.Tr>
+                </Table.Thead>
+
+                <Table.Tbody>
+                    {pokemon.map(entry => (
+                        <RankingRow
+                            key={entry.id}
+                            pokemon={entry}
+                            details={pokemonDetails.get(entry.id)}
+                            displayImages={displayImages}
+                        />
+                    ))}
+
+                    {pokemon.length === 0 && (
+                        <Table.Tr>
+                            <Table.Td colSpan={displayImages ? 9 : 8}>
+                                <Text c="dimmed" ta="center">
+                                    No rated Pokémon match this type.
+                                </Text>
+                            </Table.Td>
+                        </Table.Tr>
+                    )}
+                </Table.Tbody>
+            </Table>
+        </ScrollArea>
+    )
+}
+
+const Ranking: FC = () => {
     const {ratings} = usePokemonRatings()
     const {displayImages} = useDisplayImages()
 
@@ -67,14 +289,10 @@ const Ranking = () => {
         const filteredRatings = ratingList.filter(pokemon => {
             if (!selectedType) return true
 
-            const details = pokemonDetails.get(pokemon.id)
-
-            return details?.types.includes(selectedType) ?? false
+            return pokemonDetails.get(pokemon.id)?.types.includes(selectedType) ?? false
         })
 
-        // Calculate rank based on Elo, independently of the selected sort.
         const rankMap = new Map<string, number>()
-
         const eloSorted = [...filteredRatings].sort((a, b) => b.elo - a.elo)
 
         let currentRank = 1
@@ -91,22 +309,16 @@ const Ranking = () => {
             switch (key) {
                 case "rank":
                     return rankMap.get(pokemon.id) ?? 0
-
                 case "name":
                     return (pokemonDetails.get(pokemon.id)?.englishName ?? pokemon.id).toLowerCase()
-
                 case "elo":
                     return pokemon.elo
-
                 case "votes":
                     return pokemon.votes
-
                 case "wins":
                     return pokemon.wins
-
                 case "losses":
                     return pokemon.losses
-
                 case "ties":
                     return pokemon.votes - pokemon.wins - pokemon.losses
             }
@@ -117,13 +329,10 @@ const Ranking = () => {
                 const valueA = getValue(a, sortKey)
                 const valueB = getValue(b, sortKey)
 
-                let comparison: number
-
-                if (typeof valueA === "string" && typeof valueB === "string") {
-                    comparison = valueA.localeCompare(valueB)
-                } else {
-                    comparison = Number(valueA) - Number(valueB)
-                }
+                const comparison =
+                    typeof valueA === "string" && typeof valueB === "string"
+                        ? valueA.localeCompare(valueB)
+                        : Number(valueA) - Number(valueB)
 
                 return sortDirection === "asc" ? comparison : -comparison
             })
@@ -142,29 +351,7 @@ const Ranking = () => {
         }
     }
 
-    function renderSortIndicator(key: SortKey) {
-        if (sortKey !== key) return null
-
-        return sortDirection === "asc" ? " ▲" : " ▼"
-    }
-
-    function sortHeader(label: string, key: SortKey) {
-        return (
-            <Table.Th
-                onClick={() => handleSort(key)}
-                style={{
-                    cursor: "pointer",
-                    userSelect: "none",
-                    whiteSpace: "nowrap",
-                }}
-            >
-                {label}
-                {renderSortIndicator(key)}
-            </Table.Th>
-        )
-    }
-
-    const totalMatchups = Object.values(ratings).reduce((total, pokemon) => total + pokemon.votes, 0) / 2
+    const totalMatchups = ratingList.reduce((total, pokemon) => total + pokemon.votes, 0) / 2
 
     if (ratingList.length === 0) {
         return <Text c="dimmed">No Pokémon have been rated yet. Start voting to build your ranking!</Text>
@@ -172,112 +359,18 @@ const Ranking = () => {
 
     return (
         <>
-            <Text size="sm" c="dimmed" mb="xs">
-                {ratingList.length} Pokémon rated
-            </Text>
+            <RankingStats pokemonCount={ratingList.length} totalMatchups={totalMatchups} />
 
-            <Text size="sm" c="dimmed" mb="xs">
-                {totalMatchups} total matchups
-            </Text>
+            <RankingTypeFilter selectedType={selectedType} onTypeChange={setSelectedType} />
 
-            <Select
-                label="Filter by type"
-                placeholder="All types"
-                data={typeOptions}
-                value={selectedType}
-                onChange={setSelectedType}
-                clearable
-                w={220}
-                mb="md"
+            <RankingTable
+                pokemon={sortedRatings}
+                pokemonDetails={pokemonDetails}
+                displayImages={displayImages}
+                sortKey={sortKey}
+                sortDirection={sortDirection}
+                onSort={handleSort}
             />
-
-            <ScrollArea>
-                <Table striped highlightOnHover withTableBorder>
-                    <Table.Thead>
-                        <Table.Tr>
-                            {sortHeader("Rank", "rank")}
-                            {displayImages && <Table.Th>Image</Table.Th>}
-                            <Table.Th>Types</Table.Th>
-                            {sortHeader("Name", "name")}
-                            {sortHeader("Rating", "elo")}
-                            {sortHeader("Votes", "votes")}
-                            {sortHeader("Wins", "wins")}
-                            {sortHeader("Losses", "losses")}
-                            {sortHeader("Ties", "ties")}
-                        </Table.Tr>
-                    </Table.Thead>
-
-                    <Table.Tbody>
-                        {sortedRatings.map(pokemon => {
-                            const details = pokemonDetails.get(pokemon.id)
-                            const ties = pokemon.votes - pokemon.wins - pokemon.losses
-
-                            return (
-                                <Table.Tr key={pokemon.id}>
-                                    <Table.Td>{pokemon.rank}</Table.Td>
-
-                                    {displayImages && (
-                                        <Table.Td>
-                                            <Image
-                                                src={details?.image}
-                                                alt={details?.englishName ?? pokemon.id}
-                                                h={48}
-                                                w={48}
-                                                fit="contain"
-                                            />
-                                        </Table.Td>
-                                    )}
-
-                                    <Table.Td>
-                                        {details ? (
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    gap: 4,
-                                                }}
-                                            >
-                                                {details.types.map(type => {
-                                                    const image = typeImages[`../assets/types/${type}.png`]
-
-                                                    return image ? (
-                                                        <Image key={type} src={image} alt={type} w={24} h={24} />
-                                                    ) : (
-                                                        <Text key={type} size="xs">
-                                                            {type}
-                                                        </Text>
-                                                    )
-                                                })}
-                                            </div>
-                                        ) : (
-                                            <Text c="dimmed" size="xs">
-                                                Loading...
-                                            </Text>
-                                        )}
-                                    </Table.Td>
-
-                                    <Table.Td>{details?.englishName ?? pokemon.id}</Table.Td>
-
-                                    <Table.Td>{Math.round(pokemon.elo)}</Table.Td>
-                                    <Table.Td>{pokemon.votes}</Table.Td>
-                                    <Table.Td>{pokemon.wins}</Table.Td>
-                                    <Table.Td>{pokemon.losses}</Table.Td>
-                                    <Table.Td>{ties}</Table.Td>
-                                </Table.Tr>
-                            )
-                        })}
-
-                        {sortedRatings.length === 0 && (
-                            <Table.Tr>
-                                <Table.Td colSpan={displayImages ? 9 : 8}>
-                                    <Text c="dimmed" ta="center">
-                                        No rated Pokémon match this type.
-                                    </Text>
-                                </Table.Td>
-                            </Table.Tr>
-                        )}
-                    </Table.Tbody>
-                </Table>
-            </ScrollArea>
         </>
     )
 }
