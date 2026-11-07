@@ -135,7 +135,8 @@ const Rate = () => {
         if (!canVote || !pair || !pokemonPool) return
 
         vote(pair[0].name, pair[1].name, result)
-        setPair(getRandomPokemonPair(pokemonPool, ratings))
+
+        setPair(null)
     }
 
     return (

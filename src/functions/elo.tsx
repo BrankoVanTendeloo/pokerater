@@ -4,6 +4,7 @@ export interface PokemonRating {
     wins: number
     losses: number
     elo: number
+    cooldownUntil?: number
 }
 
 export type PokemonRatings = Record<string, PokemonRating>
@@ -16,10 +17,26 @@ export function UpdateRatings(
     pokemonA: string,
     pokemonB: string,
     result: Result,
+    cooldownA: number,
+    cooldownB: number,
 ): PokemonRatings {
-    const ratingA = ratings[pokemonA] ?? {id: pokemonA, votes: 0, wins: 0, losses: 0, elo: INITIAL_ELO}
+    const ratingA = ratings[pokemonA] ?? {
+        id: pokemonA,
+        votes: 0,
+        wins: 0,
+        losses: 0,
+        elo: INITIAL_ELO,
+    }
 
-    const ratingB = ratings[pokemonB] ?? {id: pokemonB, votes: 0, wins: 0, losses: 0, elo: INITIAL_ELO}
+    const ratingB = ratings[pokemonB] ?? {
+        id: pokemonB,
+        votes: 0,
+        wins: 0,
+        losses: 0,
+        elo: INITIAL_ELO,
+    }
+
+    const totalMatchups = Object.values(ratings).reduce((sum, rating) => sum + rating.votes, 0) / 2
 
     const newRatingA = CalculateEloChange(ratingA.elo, ratingB.elo, K_FACTOR, result)
 
@@ -33,6 +50,7 @@ export function UpdateRatings(
             wins: ratingA.wins + (result === Result.win ? 1 : 0),
             losses: ratingA.losses + (result === Result.lose ? 1 : 0),
             elo: newRatingA,
+            cooldownUntil: totalMatchups + 1 + cooldownA,
         },
         [pokemonB]: {
             ...ratingB,
@@ -40,6 +58,7 @@ export function UpdateRatings(
             wins: ratingB.wins + (result === Result.lose ? 1 : 0),
             losses: ratingB.losses + (result === Result.win ? 1 : 0),
             elo: newRatingB,
+            cooldownUntil: totalMatchups + 1 + cooldownB,
         },
     }
 }

@@ -24,7 +24,10 @@ export const PokemonRatingsProvider: FC<PokemonRatingsProviderProps> = ({childre
     }, [ratings])
 
     function vote(pokemonA: string, pokemonB: string, result: Result) {
-        setRatings(currentRatings => UpdateRatings(currentRatings, pokemonA, pokemonB, result))
+        const cooldownA = Math.floor(Math.random() * 5) + 3
+        const cooldownB = Math.floor(Math.random() * 5) + 3
+
+        setRatings(currentRatings => UpdateRatings(currentRatings, pokemonA, pokemonB, result, cooldownA, cooldownB))
     }
 
     function replaceRatings(newRatings: PokemonRatings) {
