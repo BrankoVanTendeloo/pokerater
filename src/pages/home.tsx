@@ -16,10 +16,25 @@ const HomeCard: FC<HomeCardProps> = ({children, title, callToAction, to}) => {
         <Card>
             <h2>{title}</h2>
             <p>{children}</p>
+
             <Button component={Link} to={to} mt="auto">
                 {callToAction}
             </Button>
         </Card>
+    )
+}
+
+const HomeNavigation: FC = () => {
+    return (
+        <SimpleGrid cols={{base: 1, sm: 2}} spacing="lg">
+            <HomeCard title="Rate Pokémon" callToAction="Start here" to="/rate">
+                Choose between two Pokémon which one you prefer.
+            </HomeCard>
+
+            <HomeCard title="Who's your favourite?" callToAction="Look here" to="/ranking">
+                Take a look at a full ranking of Pokémon rated by you.
+            </HomeCard>
+        </SimpleGrid>
     )
 }
 
@@ -51,11 +66,14 @@ function isPokemonRatings(value: unknown): value is PokemonRatings {
     })
 }
 
-const Home: FC = () => {
-    const {ratings, replaceRatings, resetRatings} = usePokemonRatings()
+interface RatingBackupControlsProps {
+    ratings: PokemonRatings
+    onImport: (ratings: PokemonRatings) => void
+    onMessage: (message: string) => void
+}
 
+const RatingBackupControls: FC<RatingBackupControlsProps> = ({ratings, onImport, onMessage}) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
-    const [message, setMessage] = useState("")
 
     function handleExport() {
         const json = JSON.stringify(ratings, null, 4)
@@ -82,7 +100,7 @@ const Home: FC = () => {
             const importedData: unknown = JSON.parse(contents)
 
             if (!isPokemonRatings(importedData)) {
-                setMessage("Invalid backup file. Your ratings were not changed.")
+                onMessage("Invalid backup file. Your ratings were not changed.")
                 return
             }
 
@@ -90,15 +108,51 @@ const Home: FC = () => {
 
             if (!confirmed) return
 
-            replaceRatings(importedData)
-            setMessage("Ratings successfully imported.")
+            onImport(importedData)
+            onMessage("Ratings successfully imported.")
         } catch {
-            setMessage("Could not read the backup file. Your ratings were not changed.")
+            onMessage("Could not read the backup file. Your ratings were not changed.")
         } finally {
             setSelectedFile(null)
         }
     }
 
+    return (
+        <Stack gap="md">
+            <h2>Manage your ratings</h2>
+
+            <Text>
+                Download a backup of your ratings or import an existing backup. Importing will overwrite your current
+                ratings.
+            </Text>
+
+            <Group align="end" wrap="wrap">
+                <Button onClick={handleExport}>Download backup</Button>
+
+                <FileInput
+                    label="Select backup file"
+                    placeholder="Choose a JSON file"
+                    accept=".json,application/json"
+                    value={selectedFile}
+                    onChange={setSelectedFile}
+                    clearable
+                    style={{flex: 1, minWidth: 200}}
+                />
+
+                <Button onClick={handleImport} disabled={!selectedFile}>
+                    Import backup
+                </Button>
+            </Group>
+        </Stack>
+    )
+}
+
+interface ResetRatingsButtonProps {
+    onReset: () => void
+    onMessage: (message: string) => void
+}
+
+const ResetRatingsButton: FC<ResetRatingsButtonProps> = ({onReset, onMessage}) => {
     function handleReset() {
         const confirmed = window.confirm(
             "Are you sure you want to reset all ratings? This cannot be undone unless you have a backup.",
@@ -106,52 +160,35 @@ const Home: FC = () => {
 
         if (!confirmed) return
 
-        resetRatings()
-        setMessage("All ratings have been reset.")
+        onReset()
+        onMessage("All ratings have been reset.")
     }
+
+    return (
+        <Button color="red" variant="light" onClick={handleReset}>
+            Reset ratings
+        </Button>
+    )
+}
+
+const Home: FC = () => {
+    const {ratings, replaceRatings, resetRatings} = usePokemonRatings()
+    const [message, setMessage] = useState("")
 
     return (
         <>
             <h1>PokéRater</h1>
 
-            <SimpleGrid cols={{base: 1, sm: 2}} spacing="lg">
-                <HomeCard title="Rate Pokémon" callToAction="Start here" to="/rate">
-                    Choose between two Pokémon which one you prefer.
-                </HomeCard>
-
-                <HomeCard title="Who's your favourite?" callToAction="Look here" to="/ranking">
-                    Take a look at a full ranking of Pokémon rated by you.
-                </HomeCard>
-            </SimpleGrid>
+            <HomeNavigation />
 
             <Card mt="lg">
                 <Stack gap="md">
-                    <h2>Manage your ratings</h2>
+                    <Group align="end" wrap="nowrap">
+                        <div style={{flex: 1, minWidth: 0}}>
+                            <RatingBackupControls ratings={ratings} onImport={replaceRatings} onMessage={setMessage} />
+                        </div>
 
-                    <Text>
-                        Download a backup of your ratings or import an existing backup. Importing will overwrite your
-                        current ratings.
-                    </Text>
-
-                    <Group align="end" wrap="wrap">
-                        <Button onClick={handleExport}>Download backup</Button>
-
-                        <FileInput
-                            label="Select backup file"
-                            placeholder="Choose a JSON file"
-                            accept=".json,application/json"
-                            value={selectedFile}
-                            onChange={setSelectedFile}
-                            clearable
-                            style={{flex: 1, minWidth: 200}}
-                        />
-
-                        <Button onClick={handleImport} disabled={!selectedFile}>
-                            Import backup
-                        </Button>
-                        <Button color="red" variant="light" onClick={handleReset}>
-                            Reset ratings
-                        </Button>
+                        <ResetRatingsButton onReset={resetRatings} onMessage={setMessage} />
                     </Group>
 
                     {message && <Text size="sm">{message}</Text>}
