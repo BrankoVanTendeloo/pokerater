@@ -37,7 +37,7 @@ const typeOptions = [
     label: type.charAt(0).toUpperCase() + type.slice(1),
 }))
 
-type SortKey = "name" | "elo" | "votes" | "wins" | "losses" | "ties"
+type SortKey = "rank" | "name" | "elo" | "votes" | "wins" | "losses" | "ties"
 
 type SortDirection = "asc" | "desc"
 
@@ -45,8 +45,8 @@ const Ranking = () => {
     const {ratings} = usePokemonRatings()
     const {displayImages} = useDisplayImages()
 
-    const [sortKey, setSortKey] = useState<SortKey>("elo")
-    const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
+    const [sortKey, setSortKey] = useState<SortKey>("rank")
+    const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
     const [selectedType, setSelectedType] = useState<string | null>(null)
 
     const ratingList = Object.values(ratings)
@@ -72,8 +72,26 @@ const Ranking = () => {
             return details?.types.includes(selectedType) ?? false
         })
 
-        const getValue = (pokemon: PokemonRating, key: SortKey) => {
+        // Calculate rank based on Elo, independently of the selected sort.
+        const rankMap = new Map<string, number>()
+
+        const eloSorted = [...filteredRatings].sort((a, b) => b.elo - a.elo)
+
+        let currentRank = 1
+
+        eloSorted.forEach((pokemon, index) => {
+            if (index > 0 && pokemon.elo !== eloSorted[index - 1].elo) {
+                currentRank = index + 1
+            }
+
+            rankMap.set(pokemon.id, currentRank)
+        })
+
+        const getValue = (pokemon: PokemonRating, key: SortKey): number | string => {
             switch (key) {
+                case "rank":
+                    return rankMap.get(pokemon.id) ?? 0
+
                 case "name":
                     return (pokemonDetails.get(pokemon.id)?.englishName ?? pokemon.id).toLowerCase()
 
@@ -94,20 +112,25 @@ const Ranking = () => {
             }
         }
 
-        return filteredRatings.sort((a, b) => {
-            const valueA = getValue(a, sortKey)
-            const valueB = getValue(b, sortKey)
+        return [...filteredRatings]
+            .sort((a, b) => {
+                const valueA = getValue(a, sortKey)
+                const valueB = getValue(b, sortKey)
 
-            let comparison: number
+                let comparison: number
 
-            if (typeof valueA === "string" && typeof valueB === "string") {
-                comparison = valueA.localeCompare(valueB)
-            } else {
-                comparison = Number(valueA) - Number(valueB)
-            }
+                if (typeof valueA === "string" && typeof valueB === "string") {
+                    comparison = valueA.localeCompare(valueB)
+                } else {
+                    comparison = Number(valueA) - Number(valueB)
+                }
 
-            return sortDirection === "asc" ? comparison : -comparison
-        })
+                return sortDirection === "asc" ? comparison : -comparison
+            })
+            .map(pokemon => ({
+                ...pokemon,
+                rank: rankMap.get(pokemon.id) ?? 0,
+            }))
     }, [ratingList, pokemonDetails, sortKey, sortDirection, selectedType])
 
     function handleSort(key: SortKey) {
@@ -115,7 +138,7 @@ const Ranking = () => {
             setSortDirection(current => (current === "asc" ? "desc" : "asc"))
         } else {
             setSortKey(key)
-            setSortDirection(key === "name" ? "asc" : "desc")
+            setSortDirection(key === "name" || key === "rank" ? "asc" : "desc")
         }
     }
 
@@ -141,6 +164,8 @@ const Ranking = () => {
         )
     }
 
+    const totalMatchups = Object.values(ratings).reduce((total, pokemon) => total + pokemon.votes, 0) / 2
+
     if (ratingList.length === 0) {
         return <Text c="dimmed">No Pokémon have been rated yet. Start voting to build your ranking!</Text>
     }
@@ -150,9 +175,11 @@ const Ranking = () => {
             <Text size="sm" c="dimmed" mb="xs">
                 {ratingList.length} Pokémon rated
             </Text>
+
             <Text size="sm" c="dimmed" mb="xs">
-                {Object.values(ratings).reduce((total, pokemon) => total + pokemon.votes, 0) / 2} votes
+                {totalMatchups} total matchups
             </Text>
+
             <Select
                 label="Filter by type"
                 placeholder="All types"
@@ -168,6 +195,7 @@ const Ranking = () => {
                 <Table striped highlightOnHover withTableBorder>
                     <Table.Thead>
                         <Table.Tr>
+                            {sortHeader("Rank", "rank")}
                             {displayImages && <Table.Th>Image</Table.Th>}
                             <Table.Th>Types</Table.Th>
                             {sortHeader("Name", "name")}
@@ -186,6 +214,8 @@ const Ranking = () => {
 
                             return (
                                 <Table.Tr key={pokemon.id}>
+                                    <Table.Td>{pokemon.rank}</Table.Td>
+
                                     {displayImages && (
                                         <Table.Td>
                                             <Image
@@ -238,7 +268,7 @@ const Ranking = () => {
 
                         {sortedRatings.length === 0 && (
                             <Table.Tr>
-                                <Table.Td colSpan={displayImages ? 8 : 7}>
+                                <Table.Td colSpan={displayImages ? 9 : 8}>
                                     <Text c="dimmed" ta="center">
                                         No rated Pokémon match this type.
                                     </Text>
