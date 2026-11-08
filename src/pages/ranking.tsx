@@ -182,7 +182,7 @@ const RankingRow: FC<RankingRowProps> = ({pokemon, details, displayImages}) => {
             </Table.Td>
 
             <Table.Td>{details?.englishName ?? pokemon.id}</Table.Td>
-            <Table.Td>{Math.round(pokemon.elo)}</Table.Td>
+            <Table.Td>{Math.round(pokemon.elo * 10) / 10}</Table.Td>
             <Table.Td>{pokemon.votes}</Table.Td>
             <Table.Td>{pokemon.wins}</Table.Td>
             <Table.Td>{pokemon.losses}</Table.Td>
