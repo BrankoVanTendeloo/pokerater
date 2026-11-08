@@ -9,6 +9,8 @@ import {usePokemonRatings} from "../context/pokemonRatingsContext"
 import {Result} from "../functions/elo"
 import {getRandomPokemonPair} from "../functions/pokemon"
 
+const MIN_VOTING_DELAY = 800
+
 const typeImages = import.meta.glob("../assets/types/*.png", {
     eager: true,
     query: "?url",
@@ -137,12 +139,23 @@ const Rate: FC = () => {
 
     const [pair, setPair] = useState<[PokemonEntry, PokemonEntry] | null>(null)
     const [displayedPair, setDisplayedPair] = useState<DisplayedPair | null>(null)
+    const [minimumDelayPassed, setMinimumDelayPassed] = useState(false)
 
     useEffect(() => {
         if (pokemonPool && !pair) {
             setPair(getRandomPokemonPair(pokemonPool, ratings))
         }
     }, [pokemonPool, pair, ratings])
+
+    useEffect(() => {
+        setMinimumDelayPassed(false)
+
+        const timeout = setTimeout(() => {
+            setMinimumDelayPassed(true)
+        }, MIN_VOTING_DELAY)
+
+        return () => clearTimeout(timeout)
+    })
 
     const pokemonQueries = useQueries({
         queries: pair
@@ -177,6 +190,7 @@ const Rate: FC = () => {
         isCurrentPairLoaded && displayedPair ? displayedPair.pokemon : [null, null]
 
     const canVote =
+        minimumDelayPassed &&
         !isLoading &&
         !!pair &&
         !!firstQuery?.data &&
