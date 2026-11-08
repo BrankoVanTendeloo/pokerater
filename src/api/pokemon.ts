@@ -51,6 +51,7 @@ const REGIONAL_EXCEPTIONS = new Set([
     "indeedee-male",
     "morpeko-full-belly",
     "urshifu-single-strike",
+    "urshifu-rapid-strike",
     "basculegion-male",
     "oinkologne-male",
     "maushold-family-of-four",
