@@ -51,6 +51,7 @@ const EXTRA_INCLUSIONS = new Set([
     "zygarde-50",
     "oricorio-baile",
     "wishiwashi-solo",
+    "wishiwashi-school",
     "minior-red-meteor",
     "mimikyu-disguised",
     "toxtricity-amped",
