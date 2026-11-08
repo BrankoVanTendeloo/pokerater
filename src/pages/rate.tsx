@@ -103,15 +103,22 @@ interface VoteButtonsProps {
 const VoteButtons: FC<VoteButtonsProps> = ({canVote, onVote}) => {
     return (
         <SimpleGrid cols={3} spacing="md">
-            <Button disabled={!canVote} onClick={() => onVote(Result.win)}>
+            <Button size="xl" h={80} disabled={!canVote} onClick={() => onVote(Result.win)}>
                 Vote
             </Button>
 
-            <Button variant="light" color="gray" disabled={!canVote} onClick={() => onVote(Result.tie)}>
+            <Button
+                size="xl"
+                h={80}
+                variant="light"
+                color="gray"
+                disabled={!canVote}
+                onClick={() => onVote(Result.tie)}
+            >
                 Tie
             </Button>
 
-            <Button disabled={!canVote} onClick={() => onVote(Result.lose)}>
+            <Button size="xl" h={80} disabled={!canVote} onClick={() => onVote(Result.lose)}>
                 Vote
             </Button>
         </SimpleGrid>
