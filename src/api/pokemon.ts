@@ -14,7 +14,7 @@ interface ResourceList {
     results: PokemonEntry[]
 }
 
-const REGIONAL_EXCEPTIONS = new Set([
+const EXTRA_INCLUSIONS = new Set([
     "tauros-paldea-combat-breed",
     "tauros-paldea-blaze-breed",
     "tauros-paldea-aqua-breed",
@@ -23,6 +23,9 @@ const REGIONAL_EXCEPTIONS = new Set([
     "deoxys-normal",
     "wormadam-plant",
     "giratina-altered",
+    "giratina-origin",
+    "dialga-origin",
+    "palkia-origin",
     "shaymin-land",
     "basculin-red-striped",
     "frillish-male",
@@ -125,7 +128,7 @@ export async function getPokemonPool(): Promise<PokemonEntry[]> {
 
     const regionalPokemon = pokemon.results.filter(({name}) => {
         if (REGIONAL_EXCLUSIONS.has(name)) return false
-        if (REGIONAL_EXCEPTIONS.has(name)) return true
+        if (EXTRA_INCLUSIONS.has(name)) return true
 
         return regionNames.some(suffix => name.endsWith(suffix))
     })
