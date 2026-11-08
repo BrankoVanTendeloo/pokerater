@@ -22,6 +22,8 @@ const EXTRA_INCLUSIONS = new Set([
     "lycanroc-midday",
     "deoxys-normal",
     "wormadam-plant",
+    "wormadam-sandy",
+    "wormadam-trash",
     "giratina-altered",
     "giratina-origin",
     "dialga-origin",
