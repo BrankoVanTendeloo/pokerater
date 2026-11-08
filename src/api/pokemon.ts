@@ -83,6 +83,7 @@ const EXTRA_INCLUSIONS = new Set([
     "necrozma-dawn",
     "necrozma-ultra",
     "hoopa-unbound",
+    "ursaluna-bloodmoon",
 ])
 
 const REGIONAL_EXCLUSIONS = new Set(["raticate-totem-alola"])
