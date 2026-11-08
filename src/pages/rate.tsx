@@ -24,11 +24,6 @@ const PokemonTypes: FC<PokemonTypesProps> = ({types}) => {
         <Group gap="xs" justify="center">
             {types.map(type => {
                 const image = typeImages[`../assets/types/${type}.png`]
-                // biome-ignore lint/suspicious/noConsole: TEMP
-                console.log("Type:", type)
-                // biome-ignore lint/suspicious/noConsole: TEMP
-                console.log("Image URL:", image)
-
                 return image ? (
                     <Image key={type} src={image} alt={type} w={32} h={32} />
                 ) : (
