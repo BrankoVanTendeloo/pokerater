@@ -31,6 +31,7 @@ const EXTRA_INCLUSIONS = new Set([
     "dialga-origin",
     "palkia-origin",
     "shaymin-land",
+    "shaymin-sky",
     "basculin-red-striped",
     "frillish-male",
     "jellicent-male",
