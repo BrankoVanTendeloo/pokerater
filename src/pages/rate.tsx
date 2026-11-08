@@ -148,6 +148,8 @@ const Rate: FC = () => {
     }, [pokemonPool, pair, ratings])
 
     useEffect(() => {
+        if (!pair) return
+
         setMinimumDelayPassed(false)
 
         const timeout = setTimeout(() => {
@@ -155,7 +157,7 @@ const Rate: FC = () => {
         }, MIN_VOTING_DELAY)
 
         return () => clearTimeout(timeout)
-    })
+    }, [pair])
 
     const pokemonQueries = useQueries({
         queries: pair
