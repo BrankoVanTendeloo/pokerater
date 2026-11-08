@@ -26,19 +26,16 @@ export function getRandomPokemonPair(pokemon: PokemonEntry[], ratings: PokemonRa
 
     const totalMatchups = getTotalMatchups(ratings)
 
-    // Only Pokémon whose cooldown has expired are eligible.
     const eligible = pokemon.filter(entry => {
         const cooldownUntil = ratings[entry.name]?.cooldownUntil ?? 0
 
         return totalMatchups >= cooldownUntil
     })
 
-    // Select the first Pokémon.
     const firstPool = eligible.length >= 2 ? eligible : pokemon
 
     const first = selectLowestVotePokemon(firstPool, ratings)
 
-    // Remove the first Pokémon before selecting the second.
     const remaining = pokemon.filter(entry => entry.name !== first.name)
 
     const eligibleRemaining = remaining.filter(entry => {
