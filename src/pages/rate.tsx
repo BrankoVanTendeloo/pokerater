@@ -14,10 +14,6 @@ const typeImages = import.meta.glob("../assets/types/*.png", {
     query: "?url",
     import: "default",
 }) as Record<string, string>
-// biome-ignore lint/suspicious/noConsole: Temporary
-console.log("Available type image paths:", Object.keys(typeImages))
-// biome-ignore lint/suspicious/noConsole: Temporary
-console.log("Example fire image:", typeImages["../assets/types/Fire.png"])
 
 interface PokemonTypesProps {
     types: string[]
@@ -28,6 +24,10 @@ const PokemonTypes: FC<PokemonTypesProps> = ({types}) => {
         <Group gap="xs" justify="center">
             {types.map(type => {
                 const image = typeImages[`../assets/types/${type}.png`]
+                // biome-ignore lint/suspicious/noConsole: TEMP
+                console.log("Type:", type)
+                // biome-ignore lint/suspicious/noConsole: TEMP
+                console.log("Image URL:", image)
 
                 return image ? (
                     <Image key={type} src={image} alt={type} w={32} h={32} />
