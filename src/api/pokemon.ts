@@ -65,6 +65,11 @@ const EXTRA_INCLUSIONS = new Set([
     "tatsugiri-curly",
     "dudunsparce-two-segment",
     "keldeo-resolute",
+    "rotom-heat",
+    "rotom-wash",
+    "rotom-frost",
+    "rotom-fan",
+    "rotom-mow",
 ])
 
 const REGIONAL_EXCLUSIONS = new Set(["raticate-totem-alola"])
