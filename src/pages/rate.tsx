@@ -23,7 +23,7 @@ const PokemonTypes: FC<PokemonTypesProps> = ({types}) => {
     return (
         <Group gap="xs" justify="center">
             {types.map(type => {
-                const image = typeImages[`../assets/types/${type}.png`]
+                const image = typeImages[`../assets/types/${type.toLowerCase()}.png`]
                 return image ? (
                     <Image key={type} src={image} alt={type} w={32} h={32} />
                 ) : (
