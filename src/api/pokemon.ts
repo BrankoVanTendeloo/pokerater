@@ -20,6 +20,8 @@ const EXTRA_INCLUSIONS = new Set([
     "tauros-paldea-aqua-breed",
     "darmanitan-galar-standard",
     "lycanroc-midday",
+    "lycanroc-dusk",
+    "lycanroc-midnight",
     "deoxys-normal",
     "wormadam-plant",
     "wormadam-sandy",
