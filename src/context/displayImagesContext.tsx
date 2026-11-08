@@ -13,7 +13,6 @@ export const DisplayImagesProvider: FC<PropsWithChildren> = ({children}) => {
     const [displayImages, setDisplayImages] = useState<boolean>(() => {
         const storedValue = localStorage.getItem(STORAGE_KEY)
 
-        // Default to true if no preference has been saved yet
         if (storedValue === null) return true
 
         return storedValue === "true"
